@@ -14,59 +14,146 @@
 ```mermaid
 graph TD
 
-    subgraph CADENA["CADENA CAUSAL — de la persona al usuario"]
-        E["ERROR (Error)<br/>Equivocación humana<br/>Alguien entendió mal la regla de negocio"]
-        D["DEFECTO (Bug)<br/>La equivocación queda congelada<br/>en una línea concreta de código"]
-        F["FALLO (Failure)<br/>El defecto se ejecuta y el sistema<br/>se desvía de lo esperado"]
-        LAT["Defecto LATENTE<br/>El código está malo pero<br/>nadie pisa esa ruta"]
-        E -->|"se materializa como"| D
-        D -->|"SOLO si se ejecuta esa ruta"| F
-        D -.->|"si la ruta nunca se ejecuta"| LAT
-        LAT -.->|"basta un dato nuevo para despertarlo"| F
+    subgraph MUSICA["MÚSICA — del sonido a la experiencia"]
+        R["RUIDO<br/>Sonidos sin intención musical"]
+        B["BEAT<br/>Patrón rítmico que organiza el tiempo"]
+        M["MELODÍA<br/>Secuencia de notas que puede reconocerse"]
+        H["ARMONÍA<br/>Notas que suenan juntas y generan contexto"]
+        C["CANCIÓN<br/>La combinación estructurada de ritmo,<br/>melodía, armonía y letra"]
+        R -->|"se puede transformar en"| B
+        B -->|"sirve de base para"| M
+        M -->|"se enriquece con"| H
+        H -->|"junto con estructura y voz forma"| C
     end
 
-    subgraph ROLES["ROLES OPERATIVOS — quién actúa y sobre qué"]
-        QA["QA — Calidad del PROCESO<br/>Preventivo: define el estándar<br/>ANTES de que exista el código"]
-        QC["QC — Calidad del PRODUCTO<br/>Correctivo: verifica el entregable<br/>YA construido contra el estándar"]
-        TS["TESTING — La TÉCNICA<br/>Ejecutar y analizar para<br/>producir evidencia objetiva"]
-        QA -->|"define las reglas que"| QC
-        QC -->|"se apoya en la técnica de"| TS
-        TS -->|"devuelve evidencia que retroalimenta a"| QA
+    subgraph VIDEOJUEGOS["VIDEOJUEGOS — del jugador al mundo"]
+        I["INPUT<br/>El jugador hace una acción"]
+        G["GAME LOGIC<br/>El juego interpreta la acción"]
+        S["STATE<br/>El mundo cambia de estado"]
+        F["FEEDBACK<br/>El juego comunica lo ocurrido"]
+        E["EXPERIENCIA<br/>El jugador interpreta y decide qué hacer"]
+        I -->|"activa"| G
+        G -->|"modifica"| S
+        S -->|"produce"| F
+        F -->|"genera"| E
+        E -->|"provoca un nuevo"| I
     end
 
-    subgraph PRIN["7 PRINCIPIOS ISTQB — frase clave propia"]
-        P1["P1 · Presencia, no ausencia<br/>'Probar demuestra que hay bugs,<br/>jamás que ya no quedan'"]
-        P2["P2 · Exhaustividad imposible<br/>'Probarlo todo no cabe en el<br/>universo: hay que priorizar riesgo'"]
-        P3["P3 · Pruebas tempranas<br/>'Cuanto antes lo cazo,<br/>más barato me sale'"]
-        P4["P4 · Agrupación de defectos<br/>'Los bugs viven en barrios:<br/>pocos módulos concentran casi todo'"]
-        P5["P5 · Paradoja del pesticida<br/>'La prueba repetida se vuelve ciega:<br/>hay que renovar los casos'"]
-        P6["P6 · Dependencia del contexto<br/>'No se prueba igual un juego<br/>que un sistema financiero'"]
-        P7["P7 · Falacia de ausencia de errores<br/>'Software impecable que resuelve el<br/>problema equivocado sigue siendo un fracaso'"]
+    subgraph COCINA["COCINA — de ingredientes a plato"]
+        ING["INGREDIENTES<br/>Materia prima"]
+        PRE["PREPARACIÓN<br/>Cortar, mezclar, sazonar"]
+        CAL["COCCIÓN<br/>Transformación mediante calor"]
+        PLA["PLATO<br/>Resultado físico"]
+        SAB["EXPERIENCIA<br/>Aroma, textura, sabor y presentación"]
+        ING -->|"se transforman mediante"| PRE
+        PRE -->|"pasa por"| CAL
+        CAL -->|"produce"| PLA
+        PLA -->|"se convierte en"| SAB
     end
 
-    %% --- Conexiones entre bloques ---
-    QA -->|"ataca el ERROR antes de que nazca (P3)"| E
-    QC -->|"busca el DEFECTO en el producto"| D
-    TS -->|"provoca y evidencia el FALLO"| F
-    F  -->|"el reporte devuelve la traza hasta"| D
-    D  -->|"el análisis de causa raíz llega hasta"| E
+    subgraph ESPACIO["ESPACIO — de materia a universo"]
+        POL["POLVO Y GAS<br/>Materia dispersa"]
+        EST["ESTRELLA<br/>La gravedad concentra materia"]
+        PLA2["PLANETA<br/>Materia orbitando una estrella"]
+        SIS["SISTEMA<br/>Planetas, lunas, asteroides y otros cuerpos"]
+        UNI["UNIVERSO<br/>Escala donde existen innumerables sistemas"]
+        POL -->|"la gravedad puede formar"| EST
+        EST -->|"puede estar acompañada por"| PLA2
+        PLA2 -->|"forma parte de un"| SIS
+        SIS -->|"existe dentro del"| UNI
+    end
 
-    P1 -.->|"por eso 'Passed' nunca significa 'sin defectos'"| LAT
-    P2 -.->|"obliga a particiones de equivalencia y valores límite"| TS
-    P3 -.->|"justifica la existencia preventiva de"| QA
-    P4 -.->|"orienta dónde concentrar a"| QC
-    P5 -.->|"exige rediseñar periódicamente los casos de"| TS
-    P6 -.->|"calibra cuánto rigor aplica"| QA
-    P7 -.->|"la validación con el cliente supera al veredicto técnico"| F
+    subgraph REDES["INTERNET — de una idea a una tendencia"]
+        IDEA["IDEA<br/>Algo que alguien publica"]
+        POST["POST<br/>Se convierte en contenido visible"]
+        SHARE["COMPARTIR<br/>Otras personas lo redistribuyen"]
+        TREND["TENDENCIA<br/>La idea alcanza mucha atención"]
+        MEME["MEME<br/>La comunidad transforma y replica la idea"]
+        IDEA -->|"se publica como"| POST
+        POST -->|"puede generar"| SHARE
+        SHARE -->|"acumula suficiente atención y crea una"| TREND
+        TREND -->|"la comunidad puede convertirlo en"| MEME
+        MEME -->|"genera nuevas"| IDEA
+    end
 
-    style E fill:#ffe0b2,stroke:#e65100,color:#000
-    style D fill:#ffcdd2,stroke:#b71c1c,color:#000
-    style F fill:#f8bbd0,stroke:#880e4f,color:#000
-    style LAT fill:#eceff1,stroke:#455a64,color:#000
-    style QA fill:#c8e6c9,stroke:#1b5e20,color:#000
-    style QC fill:#bbdefb,stroke:#0d47a1,color:#000
-    style TS fill:#d1c4e9,stroke:#4527a0,color:#000
-```
+    subgraph FOTOGRAFIA["FOTOGRAFÍA — de luz a imagen"]
+        LUZ["LUZ<br/>Información física de la escena"]
+        LENTE["LENTE<br/>Enfoca y dirige la luz"]
+        SENSOR["SENSOR<br/>Convierte la luz en datos"]
+        RAW["RAW<br/>Datos de imagen sin procesar"]
+        FOTO["FOTOGRAFÍA<br/>Imagen procesada y visualizada"]
+        LUZ -->|"entra por"| LENTE
+        LENTE -->|"proyecta luz sobre"| SENSOR
+        SENSOR -->|"registra"| RAW
+        RAW -->|"se procesa para crear"| FOTO
+    end
+
+    subgraph TIEMPO["TIEMPO — de instante a recuerdo"]
+        INST["INSTANTE<br/>Un momento que ocurre"]
+        MOM["MOMENTO<br/>Una experiencia percibida"]
+        REC["RECUERDO<br/>Información conservada por la mente"]
+        HIST["HISTORIA<br/>Recuerdos organizados y contados"]
+        MIT["MITO<br/>Una historia que puede transformarse<br/>con cada generación"]
+        INST -->|"es vivido como"| MOM
+        MOM -->|"puede convertirse en"| REC
+        REC -->|"puede formar parte de una"| HIST
+        HIST -->|"con el tiempo puede convertirse en"| MIT
+    end
+
+    %% --- CONEXIONES ENTRE TEMAS ---
+
+    C -.->|"una canción puede convertirse en"| MEME
+    MEME -.->|"puede inspirar una nueva"| FOTO
+    FOTO -.->|"captura un"| MOM
+    MOM -.->|"puede acompañarse de"| C
+    PLA -.->|"puede aparecer en una"| FOTO
+    FOTO -.->|"puede documentar una"| HIST
+    VIDEOJUEGOS["VIDEOJUEGOS"] -.->|"también construyen"| HIST
+    TREND -.->|"puede convertirse en referencia dentro de"| VIDEOJUEGOS
+    UNI -.->|"contiene escenarios imaginados en"| VIDEOJUEGOS
+
+    style R fill:#eeeeee,stroke:#616161,color:#000
+    style B fill:#ffcc80,stroke:#ef6c00,color:#000
+    style M fill:#ce93d8,stroke:#6a1b9a,color:#000
+    style H fill:#90caf9,stroke:#1565c0,color:#000
+    style C fill:#f48fb1,stroke:#ad1457,color:#000
+
+    style I fill:#c5cae9,stroke:#283593,color:#000
+    style G fill:#b39ddb,stroke:#4527a0,color:#000
+    style S fill:#80cbc4,stroke:#00695c,color:#000
+    style F fill:#81d4fa,stroke:#0277bd,color:#000
+    style E fill:#a5d6a7,stroke:#2e7d32,color:#000
+
+    style ING fill:#ffe0b2,stroke:#e65100,color:#000
+    style PRE fill:#ffccbc,stroke:#d84315,color:#000
+    style CAL fill:#ef9a9a,stroke:#c62828,color:#000
+    style PLA fill:#fff59d,stroke:#f9a825,color:#000
+    style SAB fill:#c8e6c9,stroke:#2e7d32,color:#000
+
+    style POL fill:#b0bec5,stroke:#37474f,color:#000
+    style EST fill:#ffab91,stroke:#d84315,color:#000
+    style PLA2 fill:#90caf9,stroke:#1565c0,color:#000
+    style SIS fill:#b39ddb,stroke:#512da8,color:#000
+    style UNI fill:#263238,stroke:#000,color:#fff
+
+    style IDEA fill:#fff9c4,stroke:#f9a825,color:#000
+    style POST fill:#bbdefb,stroke:#1976d2,color:#000
+    style SHARE fill:#c8e6c9,stroke:#388e3c,color:#000
+    style TREND fill:#f8bbd0,stroke:#c2185b,color:#000
+    style MEME fill:#d1c4e9,stroke:#512da8,color:#000
+
+    style LUZ fill:#fff59d,stroke:#f9a825,color:#000
+    style LENTE fill:#b0bec5,stroke:#455a64,color:#000
+    style SENSOR fill:#90caf9,stroke:#1565c0,color:#000
+    style RAW fill:#ce93d8,stroke:#6a1b9a,color:#000
+    style FOTO fill:#80cbc4,stroke:#00695c,color:#000
+
+    style INST fill:#e1bee7,stroke:#7b1fa2,color:#000
+    style MOM fill:#f8bbd0,stroke:#c2185b,color:#000
+    style REC fill:#bbdefb,stroke:#1565c0,color:#000
+    style HIST fill:#c8e6c9,stroke:#2e7d32,color:#000
+    style MIT fill:#ffcc80,stroke:#ef6c00,color:#000
+
 
 ### Idea que amarra los tres bloques
 
