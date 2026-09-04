@@ -7,66 +7,12 @@
 
 ## Actividad 1 — Mapa Conceptual
 
-> Evidencia del mapa conceptual embebida como diagrama Mermaid (se renderiza directamente en GitHub).
-> Los tres bloques no están sueltos: la cadena causal explica **qué** se busca, los principios explican
-> **por qué** nunca se termina de buscar, y los roles explican **quién** responde en cada momento.
+![Mapa conceptual: roles operativos, 7 principios ISTQB y cadena Error → Defecto → Fallo](mapa_conceptual.jpg)
 
-```mermaid
-graph TD
-
-    subgraph CADENA["CADENA CAUSAL — de la persona al usuario"]
-        E["ERROR (Error)<br/>Equivocación humana<br/>Alguien entendió mal la regla de negocio"]
-        D["DEFECTO (Bug)<br/>La equivocación queda congelada<br/>en una línea concreta de código"]
-        F["FALLO (Failure)<br/>El defecto se ejecuta y el sistema<br/>se desvía de lo esperado"]
-        LAT["Defecto LATENTE<br/>El código está malo pero<br/>nadie pisa esa ruta"]
-        E -->|"se materializa como"| D
-        D -->|"SOLO si se ejecuta esa ruta"| F
-        D -.->|"si la ruta nunca se ejecuta"| LAT
-        LAT -.->|"basta un dato nuevo para despertarlo"| F
-    end
-
-    subgraph ROLES["ROLES OPERATIVOS — quién actúa y sobre qué"]
-        QA["QA — Calidad del PROCESO<br/>Preventivo: define el estándar<br/>ANTES de que exista el código"]
-        QC["QC — Calidad del PRODUCTO<br/>Correctivo: verifica el entregable<br/>YA construido contra el estándar"]
-        TS["TESTING — La TÉCNICA<br/>Ejecutar y analizar para<br/>producir evidencia objetiva"]
-        QA -->|"define las reglas que"| QC
-        QC -->|"se apoya en la técnica de"| TS
-        TS -->|"devuelve evidencia que retroalimenta a"| QA
-    end
-
-    subgraph PRIN["7 PRINCIPIOS ISTQB — frase clave propia"]
-        P1["P1 · Presencia, no ausencia<br/>'Probar demuestra que hay bugs,<br/>jamás que ya no quedan'"]
-        P2["P2 · Exhaustividad imposible<br/>'Probarlo todo no cabe en el<br/>universo: hay que priorizar riesgo'"]
-        P3["P3 · Pruebas tempranas<br/>'Cuanto antes lo cazo,<br/>más barato me sale'"]
-        P4["P4 · Agrupación de defectos<br/>'Los bugs viven en barrios:<br/>pocos módulos concentran casi todo'"]
-        P5["P5 · Paradoja del pesticida<br/>'La prueba repetida se vuelve ciega:<br/>hay que renovar los casos'"]
-        P6["P6 · Dependencia del contexto<br/>'No se prueba igual un juego<br/>que un sistema financiero'"]
-        P7["P7 · Falacia de ausencia de errores<br/>'Software impecable que resuelve el<br/>problema equivocado sigue siendo un fracaso'"]
-    end
-
-    %% --- Conexiones entre bloques ---
-    QA -->|"ataca el ERROR antes de que nazca (P3)"| E
-    QC -->|"busca el DEFECTO en el producto"| D
-    TS -->|"provoca y evidencia el FALLO"| F
-    F  -->|"el reporte devuelve la traza hasta"| D
-    D  -->|"el análisis de causa raíz llega hasta"| E
-
-    P1 -.->|"por eso 'Passed' nunca significa 'sin defectos'"| LAT
-    P2 -.->|"obliga a particiones de equivalencia y valores límite"| TS
-    P3 -.->|"justifica la existencia preventiva de"| QA
-    P4 -.->|"orienta dónde concentrar a"| QC
-    P5 -.->|"exige rediseñar periódicamente los casos de"| TS
-    P6 -.->|"calibra cuánto rigor aplica"| QA
-    P7 -.->|"la validación con el cliente supera al veredicto técnico"| F
-
-    style E fill:#ffe0b2,stroke:#e65100,color:#000
-    style D fill:#ffcdd2,stroke:#b71c1c,color:#000
-    style F fill:#f8bbd0,stroke:#880e4f,color:#000
-    style LAT fill:#eceff1,stroke:#455a64,color:#000
-    style QA fill:#c8e6c9,stroke:#1b5e20,color:#000
-    style QC fill:#bbdefb,stroke:#0d47a1,color:#000
-    style TS fill:#d1c4e9,stroke:#4527a0,color:#000
-```
+> Archivo: [`mapa_conceptual.jpg`](mapa_conceptual.jpg) — los tres bloques no están sueltos: la **cadena causal**
+> explica *qué* se busca, los **roles** explican *quién* ataca cada eslabón y los **7 principios** explican
+> *por qué* la búsqueda nunca termina. Las etiquetas **P1–P7** sobre las cajas indican qué principio gobierna
+> cada elemento.
 
 ### Idea que amarra los tres bloques
 
@@ -80,7 +26,7 @@ graph TD
 
 ## Actividad 2 — Recepción y Verificación del Código Base
 
-- Archivo `presupuesto_analisis.py` recibido **tal como fue entregado** (sin correcciones).
+- Archivo `presupuesto_analisis.py` sin correcciones.
 - Verificación de ejecución con datos normales (`presupuesto=100000`, `socios=4`, `meses=6`):
   el script arranca, pide las tres entradas e imprime el reporte completo **sin excepciones**.
 
@@ -91,9 +37,6 @@ Intereses generados: $72000.00
 Total con intereses: $172000.00
 Cuota por socio (4 socios): $43000.00
 ```
-
-> El programa **corre**, pero correr no es funcionar: el veredicto sobre ese `$72000.00` se emite en la
-> Actividad 4, no aquí. (Principio 1)
 
 ---
 

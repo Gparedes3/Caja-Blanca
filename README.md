@@ -10,6 +10,7 @@ Clase 2 · Análisis de un sistema de presupuesto con defectos inyectados.
 |---|---|
 | `presupuesto_analisis.py` | Código base recibido, **tal como fue entregado** (con sus defectos inyectados, sin corregir) |
 | `casos_prueba.md` | Mapa conceptual + plan de pruebas + ejecución dinámica + reportes de defecto |
+| `mapa_conceptual.jpg` | Mapa conceptual de la Actividad 1 (imagen) |
 | `README.md` | Este archivo, con el cierre y la validación conceptual |
 
 ## Cómo ejecutar
@@ -128,7 +129,7 @@ repararse; un sistema perfecto que resuelve el problema equivocado se tira a la 
 - [x] Repositorio de GitHub estrictamente **público**
 - [x] Contiene `presupuesto_analisis.py` **tal como fue entregado** (defectos intactos)
 - [x] Contiene `casos_prueba.md`
-- [x] El Markdown incluye evidencia del **mapa conceptual** (diagrama Mermaid renderizable al inicio del archivo)
+- [x] El Markdown incluye evidencia del **mapa conceptual** (imagen `mapa_conceptual.jpg` al inicio del archivo)
 - [x] La tabla tiene los casos **ejecutados**, con columna **Estado** y las **líneas de código defectuosas** señaladas (L3–L5, L9, L12)
 - [x] `README.md` contiene las respuestas a los **dos desafíos** del cierre
 - [x] Cada actividad fue observada y registrada de principio a fin
