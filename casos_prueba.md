@@ -1,34 +1,26 @@
-# Taller Autónomo de Pruebas de Caja Negra — `presupuesto_analisis.py`
+# Taller de Pruebas de Caja Negra — `presupuesto_analisis.py`
 
 **Repositorio:** https://github.com/Gparedes3/Caja-Blanca
-**Referencias:** ISTQB Foundation Level · ISO/IEC/IEEE 29119
+**Equipo:** Guillermo Paredes · Donato Oña · Mateo Villacreses
 
 ---
 
 ## Actividad 1 — Mapa Conceptual
 
-![Mapa conceptual: roles operativos, 7 principios ISTQB y cadena Error → Defecto → Fallo](mapa_conceptual.jpg)
+![alt text](image.png)
 
-> Archivo: [`mapa_conceptual.jpg`](mapa_conceptual.jpg) — los tres bloques no están sueltos: la **cadena causal**
-> explica *qué* se busca, los **roles** explican *quién* ataca cada eslabón y los **7 principios** explican
-> *por qué* la búsqueda nunca termina. Las etiquetas **P1–P7** sobre las cajas indican qué principio gobierna
-> cada elemento.
-
-### Idea que amarra los tres bloques
-
-> **QA** intenta que el **Error** nunca ocurra (proceso), **QC** intenta que el **Defecto** no salga del taller
-> (producto) y el **Testing** es la técnica que fuerza al **Fallo** a mostrarse en un ambiente controlado
-> antes de que lo haga en producción. Los **7 principios** son las restricciones físicas del juego: nos dicen
-> que nunca terminaremos (P1, P2), dónde y cuándo conviene buscar (P3, P4, P6), por qué debemos cambiar de
-> táctica (P5), y que ganar técnicamente no es ganar si el producto no era el pedido (P7).
+**En resumen:** QA cuida el proceso para que no se cometan errores. QC revisa el producto para que los
+defectos no salgan. El Testing es la forma de hacer que un fallo aparezca aquí, en pruebas, y no donde
+el cliente lo vea. Los 7 principios nos recuerdan que nunca vamos a probarlo todo, que conviene probar
+temprano, y que un programa sin bugs igual sirve de nada si no era lo que pedían.
 
 ---
 
-## Actividad 2 — Recepción y Verificación del Código Base
+## Actividad 2 — Revisión del código recibido
 
-- Archivo `presupuesto_analisis.py` sin correcciones.
-- Verificación de ejecución con datos normales (`presupuesto=100000`, `socios=4`, `meses=6`):
-  el script arranca, pide las tres entradas e imprime el reporte completo **sin excepciones**.
+Recibimos `presupuesto_analisis.py` y lo dejamos tal cual, sin corregir nada.
+
+Primero lo corrimos con datos normales (presupuesto 100000, 4 socios, 6 meses) solo para ver que arranca:
 
 ```
 === Sistema de Análisis de Presupuesto ===
@@ -38,73 +30,70 @@ Total con intereses: $172000.00
 Cuota por socio (4 socios): $43000.00
 ```
 
----
-
-## Actividad 3 — Diseño del Plan de Pruebas (Caja Negra Estática)
-
-Diseño realizado **sin inspeccionar la estructura interna** del código, aplicando:
-
-| Técnica | Aplicación en este sistema |
-|---|---|
-| **Partición de equivalencia** | `presupuesto`: {negativo} · {cero} · {positivo} · {no numérico} — `socios`: {≤0} · {≥1} · {no entero} — `meses`: {0} · {1..n} |
-| **Valores límite** | `socios = 0` (frontera inferior inválida) y `socios = 1` (primer valor válido); `meses = 1` vs `meses = 12` |
-| **Oráculo de negocio** | Interés simple mensual esperado: `presupuesto × 0.02 × meses`. Cuota esperada: `total ÷ socios`. |
-
-### Tabla de casos — estado inicial: **planeado**
-
-| ID | Descripción | Precondición | Entrada | Esperado | Real | Estado |
-|---|---|---|---|---|---|---|
-| CP-01 | Cálculo de interés con datos normales (partición válida) | Script iniciado | presupuesto=100000, socios=4, meses=6 | Intereses = $12000.00 (100000 × 0.02 × 6), total = $112000.00, cuota = $28000.00 | — | — |
-| CP-02 | Comportamiento en el límite inferior inválido de socios | Script iniciado, presupuesto > 0 | presupuesto=50000, socios=0, meses=3 | Mensaje controlado de error ("el número de socios debe ser mayor a 0"), sin cerrar el programa | — | — |
-| CP-03 | Entrada no numérica en presupuesto (partición inválida) | Script iniciado | presupuesto="abc", socios=2, meses=3 | Mensaje controlado ("ingrese un valor numérico") y nueva solicitud del dato | — | — |
-| CP-04 | Valores negativos en presupuesto y socios (partición inválida) | Script iniciado | presupuesto=-5000, socios=-3, meses=6 | Rechazo de valores negativos con mensaje controlado; no debe calcularse cuota alguna | — | — |
+No se cayó. Pero los intereses ya se veían raros.
 
 ---
 
-## Actividad 4 — Ejecución Dinámica y Localización de Defectos
+## Actividad 3 — Plan de pruebas
 
-Ejecución real del plan y, **solo después del fallo**, inspección de Caja Blanca para aislar el defecto físico.
+Diseñamos los casos sin mirar el código por dentro, solo pensando en qué debería hacer el programa.
 
-### Tabla de casos — ejecutada
+**Cómo elegimos los datos:**
 
-| ID | Descripción | Precondición | Entrada | Esperado | Real | Estado |
-|---|---|---|---|---|---|---|
-| CP-01 | Cálculo de interés con datos normales | Script iniciado | presupuesto=100000, socios=4, meses=6 | Intereses = $12000.00, total = $112000.00, cuota = $28000.00 | Intereses = **$72000.00**, total = $172000.00, cuota = $43000.00. El programa **no se cae**: entrega un número creíble pero incorrecto (6× el valor real) | **Failed** |
-| CP-02 | Límite inferior inválido de socios | Script iniciado, presupuesto > 0 | presupuesto=50000, socios=0, meses=3 | Mensaje controlado de error, sin cerrar el programa | `ZeroDivisionError: float division by zero` en línea 12 — el programa se detiene abruptamente | **Failed** |
-| CP-03 | Entrada no numérica en presupuesto | Script iniciado | presupuesto="abc", socios=2, meses=3 | Mensaje controlado y nueva solicitud del dato | `ValueError: could not convert string to float: 'abc'` en línea 3 — el programa se detiene antes de pedir los otros datos | **Failed** |
-| CP-04 | Valores negativos en presupuesto y socios | Script iniciado | presupuesto=-5000, socios=-3, meses=6 | Rechazo con mensaje controlado; sin cálculo de cuota | Acepta los negativos y calcula: intereses = $-3600.00, total = $-8600.00, **cuota = $2866.67 positiva** para una deuda negativa | **Failed** |
+- **Particiones de equivalencia:** agrupamos las entradas en válidas e inválidas. Presupuesto: negativo,
+  cero, positivo y texto. Socios: cero o menos, y uno o más. Meses: cero y de uno en adelante.
+- **Valores límite:** probamos justo en la frontera, porque ahí es donde suelen esconderse los bugs.
+  `socios = 0` es el primer valor inválido y `socios = 1` el primero válido.
+- **Qué esperamos (oráculo):** interés simple = `presupuesto × 0.02 × meses`. Cuota = `total ÷ socios`.
 
-**Resumen:** 4 ejecutados · 0 Passed · **4 Failed**.
+### Casos planeados
 
-### Reportes de Defecto (Fallo ≠ Defecto)
+| ID | Qué prueba | Entrada | Resultado esperado |
+|---|---|---|---|
+| CP-01 | Cálculo normal, todo válido | presupuesto=100000, socios=4, meses=6 | Intereses $12000.00, total $112000.00, cuota $28000.00 |
+| CP-02 | Cero socios (límite inválido) | presupuesto=50000, socios=0, meses=3 | Un mensaje de error claro, sin que el programa se cierre |
+| CP-03 | Texto en vez de número | presupuesto="abc", socios=2, meses=3 | Un mensaje pidiendo un número y volver a preguntar |
+| CP-04 | Valores negativos | presupuesto=-5000, socios=-3, meses=6 | Rechazar los negativos y no calcular nada |
 
-**Reporte de Defecto: CP-01 → Defecto lógico de fórmula**
-El **Fallo** (intereses inflados a $72000.00 en lugar de $12000.00) ocurre porque el **Defecto** está en la
-**línea 9**:
+---
+
+## Actividad 4 — Ejecución y defectos encontrados
+
+Corrimos los cuatro casos. Solo **después** de ver el fallo entramos al código a buscar la línea culpable.
+
+### Casos ejecutados
+
+| ID | Entrada | Esperado | Lo que pasó | Estado |
+|---|---|---|---|---|
+| CP-01 | 100000, 4, 6 | Intereses $12000.00, cuota $28000.00 | Intereses **$72000.00**, cuota $43000.00. No se cayó, pero el número está 6 veces más alto | **Failed** |
+| CP-02 | 50000, 0, 3 | Mensaje de error controlado | `ZeroDivisionError` en la línea 12 y el programa se corta | **Failed** |
+| CP-03 | "abc", 2, 3 | Mensaje pidiendo un número | `ValueError` en la línea 3, ni siquiera alcanza a pedir los otros datos | **Failed** |
+| CP-04 | -5000, -3, 6 | Rechazo de negativos | Los acepta: total $-8600.00 y una cuota **positiva** de $2866.67 | **Failed** |
+
+**Resultado: 4 ejecutados · 0 Passed · 4 Failed.**
+
+### Los defectos, uno por uno
+
+**CP-01 — La fórmula está mal (línea 9)**
 
 ```python
 intereses = presupuesto * tasa_interes_mensual * (meses ** 2)
 ```
 
-El requisito describe un interés **simple mensual**, que se acumula multiplicando por el número de meses;
-el código eleva `meses` al cuadrado (`meses ** 2` = 36 en vez de 6). Es el defecto más peligroso del lote:
-**no lanza excepción**, así que un usuario sin oráculo de negocio lo daría por "Passed". Corrección:
-`* meses`.
+Debería multiplicar por `meses`, no elevarlo al cuadrado. Con 6 meses multiplica por 36. Este es el más
+peligroso de todos porque no lanza ningún error: el programa entrega un número que parece normal.
+Si no sabes cuánto debía dar, lo das por bueno. Se arregla cambiando `(meses ** 2)` por `meses`.
 
-**Reporte de Defecto: CP-02 → División sin validar el divisor**
-El **Fallo** (`ZeroDivisionError`, el programa se detiene) ocurre porque el **Defecto** está en la
-**línea 12**:
+**CP-02 — Divide sin revisar el divisor (línea 12)**
 
 ```python
 cuota_por_socio = total / socios
 ```
 
-El código nunca valida si `socios` es igual a cero antes de dividir. Falta la guarda previa
-(`if socios <= 0:` con mensaje controlado) o el bloque `try/except ZeroDivisionError`.
+Nunca pregunta si `socios` es cero antes de dividir. Falta un `if socios <= 0:` con su mensaje, o un
+`try/except`.
 
-**Reporte de Defecto: CP-03 → Conversión de tipo sin protección**
-El **Fallo** (`ValueError`, caída al primer dato mal escrito) ocurre porque el **Defecto** está en la
-**línea 3** — y se repite igual en las **líneas 4 y 5**:
+**CP-03 — Convierte el texto sin protección (líneas 3, 4 y 5)**
 
 ```python
 presupuesto = float(input("Ingrese el presupuesto total: "))
@@ -112,28 +101,84 @@ socios = int(input("Ingrese el número de socios: "))
 meses  = int(input("Ingrese los meses de inversión: "))
 ```
 
-Las conversiones `float()` / `int()` se aplican directamente sobre `input()` sin `try/except ValueError` ni
-bucle de reintento. Un error de digitación derriba la aplicación completa.
+Aplica `float()` e `int()` directo sobre lo que escriba el usuario, sin `try/except` ni volver a
+preguntar. Una letra de más y se cae todo el programa. El mismo error repetido tres veces seguidas.
 
-**Reporte de Defecto: CP-04 → Ausencia de validación de dominio**
-El **Fallo** (una deuda de $-8600.00 repartida como una cuota **positiva** de $2866.67) ocurre porque el
-**Defecto** es una **omisión entre las líneas 5 y 9**: no existe ninguna validación de rango que rechace
-`presupuesto < 0` ni `socios < 1`. Al dividir dos negativos, el signo se cancela y el sistema emite un
-resultado matemáticamente válido pero **financieramente absurdo**. Corrección: validar el dominio de cada
-entrada inmediatamente después de leerla.
+**CP-04 — No valida nada (falta entre las líneas 5 y 9)**
 
-### Trazabilidad defecto → principio ISTQB
+Aquí el defecto es algo que **no está**: no hay ninguna validación que rechace un presupuesto negativo o
+socios negativos. Al dividir dos negativos los signos se cancelan y sale una cuota positiva para una
+deuda. Matemáticamente correcto, financieramente absurdo. Se arregla validando cada dato apenas se lee.
 
-| Caso | Fallo observado | Defecto (línea) | Principio que ilustra |
+### Fallo vs. Defecto
+
+Vale la pena separarlo, porque no son lo mismo:
+
+- El **defecto** es la línea mal escrita. Está siempre ahí, aunque nadie la ejecute.
+- El **fallo** es lo que ves cuando esa línea se ejecuta con el dato justo.
+
+Por ejemplo: la línea 12 puede estar años sin dar problemas si nadie escribe nunca `socios = 0`.
+
+### Qué principio ilustra cada caso
+
+| Caso | Fallo | Defecto | Principio |
 |---|---|---|---|
-| CP-01 | Resultado incorrecto sin excepción | L9 — `meses ** 2` | P1: el sistema "funcionaba"; probar reveló el bug |
-| CP-02 | `ZeroDivisionError` | L12 — división sin guarda | P2/P4: los defectos se agrupan en las fronteras |
-| CP-03 | `ValueError` | L3 (y L4, L5) — casting sin `try` | P4: mismo patrón defectuoso repetido en un barrio de 3 líneas |
-| CP-04 | Cuota positiva sobre monto negativo | L5–L9 — omisión de validación | P7: cálculo "correcto", requisito de negocio incumplido |
+| CP-01 | Número incorrecto sin error | L9 — `meses ** 2` | P1: probar muestra que hay defectos; que "funcione" no prueba nada |
+| CP-02 | `ZeroDivisionError` | L12 — división sin guarda | P2/P4: los bugs se agrupan en las fronteras |
+| CP-03 | `ValueError` | L3, L4, L5 — casting sin `try` | P4: el mismo error repetido en tres líneas vecinas |
+| CP-04 | Cuota positiva sobre una deuda | L5–L9 — falta validación | P7: cálculo correcto, requisito incumplido |
 
 ---
 
-## Actividad 5 — Control de Versiones y Entrega
+## Actividad 5 — Control de versiones y entrega
 
-Artefactos versionados en el repositorio público:
-`presupuesto_analisis.py` (íntegro, sin corregir) · `casos_prueba.md` · `README.md` · `.gitignore`
+Todo quedó versionado en el repositorio público:
+
+| Archivo | Qué es |
+|---|---|
+| `presupuesto_analisis.py` | El código original, sin corregir |
+| `calculadora.py` | La versión corregida |
+| `casos_prueba.md` | Este documento |
+| `README.md` | Resumen y respuestas del cierre |
+| `image.png` | El mapa conceptual |
+| `test_calculadora.py` | Las pruebas automáticas |
+| `.github/workflows/ci.yml` | La configuración de la CI |
+
+## Actividad 6 — Automatización de las pruebas
+
+Los 4 casos los ejecutamos primero a mano. Después los automatizamos para no tener que
+repetirlos cada vez.
+
+Como el código original no se puede corregir (es la evidencia), escribimos la versión
+arreglada en `calculadora.py`, partida en funciones que reciben datos y devuelven un
+resultado. Así cada una se puede probar por separado:
+
+| Función | Qué defecto arregla |
+|---|---|
+| `calcular_intereses(presupuesto, meses)` | L9 — ya no eleva los meses al cuadrado |
+| `calcular_cuota(total, socios)` | L12 — avisa si los socios son 0 en vez de caerse |
+| `a_numero(texto)` | L3–L5 — da un mensaje claro si no es un número |
+| `analizar(...)` | La validación que faltaba: rechaza los negativos |
+
+`test_calculadora.py` tiene 16 pruebas sobre esas funciones. Cada una se lee igual de simple:
+
+```python
+def test_intereses_con_datos_normales():
+    assert calcular_intereses(100000, 6) == 12000
+
+def test_cuota_con_cero_socios():
+    with pytest.raises(ValueError):
+        calcular_cuota(50000, 0)
+```
+
+Para correrlas:
+
+```bash
+pip install pytest
+pytest
+```
+
+Y con `.github/workflows/ci.yml`, GitHub Actions las corre solo en cada `push` y cada pull
+request, con Python 3.11 y 3.12. Si alguien rompe algo, la CI se pone roja y avisa.
+
+**Resultado: 16 passed.**

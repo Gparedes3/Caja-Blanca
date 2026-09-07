@@ -1,135 +1,146 @@
-# Caja-Blanca — Taller Autónomo de Pruebas de Caja Negra
+# Caja-Blanca — Taller de Pruebas de Caja Negra
 
-Clase 2 · Análisis de un sistema de presupuesto con defectos inyectados.
+Clase 2 · Probamos un sistema de presupuesto que venía con defectos escondidos a propósito.
 
 **Equipo:** Guillermo Paredes · Donato Oña · Mateo Villacreses
 
-## Contenido del repositorio
+## Qué hay en el repositorio
 
-| Archivo | Descripción |
+| Archivo | Qué es |
 |---|---|
-| `presupuesto_analisis.py` | Código base recibido, **tal como fue entregado** (con sus defectos inyectados, sin corregir) |
-| `casos_prueba.md` | Mapa conceptual + plan de pruebas + ejecución dinámica + reportes de defecto |
-| `mapa_conceptual.jpg` | Mapa conceptual de la Actividad 1 (imagen) |
-| `README.md` | Este archivo, con el cierre y la validación conceptual |
+| `presupuesto_analisis.py` | El código que nos entregaron, **sin corregir** (la evidencia) |
+| `calculadora.py` | La versión corregida, partida en funciones que se pueden probar |
+| `casos_prueba.md` | Mapa conceptual, plan de pruebas, ejecución y los defectos encontrados |
+| `image.png` | El mapa conceptual de la Actividad 1 |
+| `README.md` | Este archivo, con las respuestas del cierre |
+| `test_calculadora.py` | Las pruebas automáticas |
+| `.github/workflows/ci.yml` | Pipeline de CI que corre las pruebas en cada push |
 
-## Cómo ejecutar
+## Cómo ejecutarlo
 
 ```bash
 python3 presupuesto_analisis.py
 ```
 
-El script solicita por consola: presupuesto total, número de socios y meses de inversión.
+Pide tres datos por consola: presupuesto total, número de socios y meses de inversión.
 
-## Resumen de la campaña de pruebas
+## Resumen
 
-4 casos diseñados con partición de equivalencia y valores límite · **0 Passed / 4 Failed** ·
-4 defectos aislados en las líneas **3–5**, **9** y **12**, más una omisión de validación de dominio.
-El detalle completo está en [`casos_prueba.md`](casos_prueba.md).
+Diseñamos 4 casos con partición de equivalencia y valores límite. Los cuatro fallaron.
+Encontramos 4 defectos: en las líneas **3–5**, **9** y **12**, más una validación que
+simplemente no existe. El detalle está en [`casos_prueba.md`](casos_prueba.md).
+
+## Cómo ejecutar la versión corregida
+
+```bash
+python3 calculadora.py
+```
+
+## Pruebas automatizadas
+
+Para correrlas en tu máquina:
+
+```bash
+pip install pytest
+pytest
+```
+
+Son 16 pruebas en `test_calculadora.py`. Cada una llama a una función con unos datos y
+comprueba que devuelve lo que debe:
+
+```python
+def test_intereses_con_datos_normales():
+    assert calcular_intereses(100000, 6) == 12000
+```
+
+GitHub Actions las corre solo cada vez que subimos algo, gracias a `.github/workflows/ci.yml`.
 
 ---
 
-# Cierre y Validación Conceptual de Alta Profundidad
+# Cierre — Los dos desafíos
 
-## Desafío Lógico 1
+## Desafío 1
 
-> Según lo investigado en ISTQB, ¿es posible que un Defecto (Bug) exista en el código fuente de
-> `presupuesto_analisis.py` durante años sin llegar a causar nunca un Fallo (Failure)?
-> Justifiquen técnicamente.
+> ¿Puede un defecto vivir años en el código sin causar nunca un fallo?
 
-**Sí, es completamente posible, y nuestro propio código lo demuestra.**
+**Sí, y nuestro propio código lo demuestra.**
 
-La justificación técnica está en la naturaleza de la cadena **Error → Defecto → Fallo**: un **Defecto** es
-una condición **estática** que reside en el código y existe desde el instante en que se escribió; un
-**Fallo** es un evento **dinámico**, la manifestación observable de ese defecto. Para que el defecto se
-convierta en fallo deben cumplirse **tres condiciones simultáneas**:
+El defecto es una línea mal escrita: está ahí desde que alguien la escribió. El fallo es algo que pasa,
+en el momento en que ejecutas el programa. Para que un defecto se convierta en fallo tienen que darse
+tres cosas a la vez:
 
-1. La línea defectuosa debe **ejecutarse** (alcanzabilidad).
-2. Debe ejecutarse con un **dato de entrada** que active la condición errónea (infección del estado).
-3. El estado corrupto debe **propagarse hasta una salida observable** (propagación).
+1. Que la línea mala **se ejecute**.
+2. Que se ejecute **con el dato** que activa el problema.
+3. Que el resultado equivocado **se vea** en la salida.
 
-Si alguna de las tres no se cumple, el defecto permanece **latente**: está ahí, pero es invisible.
+Si falta cualquiera de las tres, el defecto sigue ahí pero nadie lo nota.
 
-Aplicado literalmente a nuestro archivo:
+Dos ejemplos de nuestro archivo:
 
-- El defecto de la **línea 12** (`total / socios`, sin validar el divisor) puede vivir años intacto: si
-  durante toda la historia operativa de la empresa **jamás** se registró un escenario con `socios = 0`
-  —porque comercialmente no tiene sentido un fondo sin socios—, la línea se ejecuta miles de veces sin
-  producir un solo `ZeroDivisionError`. El defecto no desapareció: nunca fue alcanzado por el dato que lo
-  activa. Basta un día con un formulario vacío, una migración de datos o un usuario nuevo para que el
-  fallo aparezca "de repente" en un código que "llevaba años funcionando".
-- El defecto de la **línea 9** (`meses ** 2`) es todavía más silencioso: existe un valor de entrada,
-  `meses = 1`, para el cual `1 ** 2 == 1` y el resultado coincide exactamente con el correcto. Si el
-  negocio solo hubiera operado con inversiones a un mes, el defecto habría estado presente en cada
-  ejecución **sin producir jamás un fallo observable**.
+- **Línea 12** (`total / socios`, sin revisar el divisor): si en toda la vida de la empresa nunca nadie
+  registró un fondo con cero socios —porque no tiene sentido comercial—, esa línea corre miles de veces
+  sin un solo error. El defecto nunca se fue: solo nunca le llegó el dato que lo despierta. Un formulario
+  vacío o una migración de datos, y un día aparece el fallo en un código que "llevaba años funcionando".
+- **Línea 9** (`meses ** 2`): esta es todavía más silenciosa. Con `meses = 1`, `1 ** 2` da 1 y el
+  resultado sale exactamente igual al correcto. Si la empresa solo hubiera trabajado con inversiones a
+  un mes, el defecto habría estado presente siempre sin dar nunca un resultado malo.
 
-Esto conecta directamente con dos principios de ISTQB:
+Esto es justo lo que dicen dos principios de ISTQB:
 
-- **Principio 1 (las pruebas muestran la presencia de defectos, no su ausencia):** años de operación sin
-  incidentes no son evidencia de código sin defectos; son evidencia de que las combinaciones de entrada
-  usadas hasta hoy no alcanzaron los defectos existentes.
-- **Principio 2 (las pruebas exhaustivas son imposibles):** el espacio de entradas de estas tres variables
-  es prácticamente infinito, así que siempre quedarán rutas nunca ejercitadas donde un defecto puede
-  esconderse indefinidamente.
+- **P1 — las pruebas muestran que hay defectos, no que no los hay.** Años sin incidentes no significan
+  código limpio; significan que los datos usados hasta hoy no tocaron los defectos que ya estaban.
+- **P2 — probar todo es imposible.** Con tres variables numéricas las combinaciones son infinitas, así
+  que siempre van a quedar caminos sin recorrer donde un defecto se puede esconder.
 
-**Conclusión:** la ausencia de fallos mide la suerte de la cobertura histórica de datos, no la calidad
-interna del código. Por eso el testing sistemático de valores límite —precisamente `socios = 0`— es lo que
-convierte un defecto latente en un fallo controlado dentro del laboratorio, en lugar de un incidente en
-producción.
+**En corto:** que no haya fallos mide la suerte de los datos que han entrado, no la calidad del código.
+Por eso probamos valores límite como `socios = 0`: para que el defecto salga aquí y no en producción.
 
-## Desafío Lógico 2
+## Desafío 2
 
-> Imaginen que corrigen todos los bugs y el script funciona perfecto, pero el cliente afirma que
-> "necesitaba un sistema para calcular nóminas, no presupuestos". ¿Qué principio fundamental del testing
-> de ISTQB se acaba de violar aunque el código esté limpio?
+> Arreglan todos los bugs, el script queda perfecto, y el cliente dice: "yo necesitaba calcular nóminas,
+> no presupuestos". ¿Qué principio se violó, aunque el código esté limpio?
 
-Se violó el **Principio 7 de ISTQB: la falacia de la ausencia de errores**
-*(absence-of-errors fallacy)*.
+**El Principio 7: la falacia de la ausencia de errores.**
 
-Este principio establece que **encontrar y corregir defectos no sirve de nada si el sistema construido no
-satisface las necesidades y expectativas reales del usuario**. Un software puede ser técnicamente
-impecable —cero excepciones, cobertura completa, todos los casos en **Passed**— y aun así ser un **fracaso
-absoluto de proyecto**, porque la calidad no se define contra el código, sino contra la necesidad que debía
-resolver.
+Dice que encontrar y arreglar defectos no sirve de nada si el sistema no es lo que el usuario necesitaba.
+Un programa puede estar impecable —cero excepciones, todos los casos en Passed— y aun así ser un fracaso,
+porque la calidad no se mide contra el código sino contra el problema que debía resolver.
 
-La distinción técnica que explica el desastre es **Verificación vs. Validación**:
+La diferencia que lo explica es **verificación vs. validación**:
 
-| | Pregunta que responde | En este escenario |
+| | Pregunta | En este caso |
 |---|---|---|
-| **Verificación** | ¿Estamos construyendo el producto **correctamente**? | ✅ Superada: fórmula de interés arreglada, división protegida, entradas validadas |
-| **Validación** | ¿Estamos construyendo el **producto correcto**? | ❌ Fallida: el cliente pidió nóminas y recibió presupuestos |
+| **Verificación** | ¿Lo estamos construyendo bien? | ✅ Sí: fórmula arreglada, división protegida, entradas validadas |
+| **Validación** | ¿Estamos construyendo lo correcto? | ❌ No: pidieron nóminas y recibieron presupuestos |
 
-Todo el esfuerzo se concentró en la **verificación** (calidad interna) y se omitió por completo la
-**validación** (calidad externa, ajuste al propósito). El equipo probó exhaustivamente **el sistema
-equivocado**.
+Todo el esfuerzo se fue en verificar y nadie validó. Probamos muy bien el sistema equivocado.
 
-**¿Dónde estuvo la causa raíz?** No en el testing dinámico, sino mucho antes: en un **Error** de
-levantamiento y comprensión de requisitos. Ese Error se materializó como un **Defecto de requisitos** en el
-documento base —no en una línea de Python—, y de ahí se propagó a una arquitectura entera perfectamente
-construida sobre la premisa incorrecta. El **Fallo** solo se hizo visible en la entrega, que es el momento
-más caro posible para descubrirlo.
+**¿Dónde empezó todo?** No en las pruebas, mucho antes: en un **error** al entender los requisitos. Ese
+error quedó como un defecto en el documento —no en una línea de Python— y de ahí se propagó a todo lo
+demás. El fallo recién se vio en la entrega, que es el momento más caro para descubrirlo.
 
-Esto arrastra la violación de otros dos principios:
+Y de paso se rompieron otros dos principios:
 
-- **Principio 3 (pruebas tempranas / shift-left):** una revisión estática de los requisitos —una prueba de
-  Caja Negra sobre el **documento**, no sobre el código— habría detectado la discrepancia en la primera
-  semana, con un costo de corrección cercano a cero.
-- **Principio 6 (las pruebas dependen del contexto):** un sistema de nóminas exige reglas de negocio
-  radicalmente distintas (deducciones, aportes de seguridad social, retención en la fuente, periodicidad
-  de pago) que jamás formaron parte del diseño de pruebas de un módulo de presupuestos.
+- **P3 — probar temprano:** revisar el documento de requisitos en la primera semana habría encontrado la
+  confusión cuando corregirla no costaba casi nada.
+- **P6 — las pruebas dependen del contexto:** un sistema de nóminas necesita reglas completamente
+  distintas (deducciones, seguridad social, retenciones, periodicidad de pago) que nunca estuvieron en
+  el diseño de pruebas de un módulo de presupuestos.
 
-**Lección de ingeniería:** la calidad no es la ausencia de errores técnicos, sino la **aptitud para el
-uso** *(fitness for purpose)*. Un sistema con bugs que resuelve el problema correcto todavía puede
-repararse; un sistema perfecto que resuelve el problema equivocado se tira a la basura.
+**La lección:** calidad no es que no haya errores, es que sirva para lo que se pidió. Un sistema con bugs
+que resuelve el problema correcto todavía se arregla; uno perfecto que resuelve el problema equivocado
+se bota.
 
 ---
 
-## Check-list de Autoevaluación Final
+## Check-list final
 
-- [x] Repositorio de GitHub estrictamente **público**
-- [x] Contiene `presupuesto_analisis.py` **tal como fue entregado** (defectos intactos)
-- [x] Contiene `casos_prueba.md`
-- [x] El Markdown incluye evidencia del **mapa conceptual** (imagen `mapa_conceptual.jpg` al inicio del archivo)
-- [x] La tabla tiene los casos **ejecutados**, con columna **Estado** y las **líneas de código defectuosas** señaladas (L3–L5, L9, L12)
-- [x] `README.md` contiene las respuestas a los **dos desafíos** del cierre
-- [x] Cada actividad fue observada y registrada de principio a fin
+- [x] Repositorio de GitHub **público**
+- [x] Incluye `presupuesto_analisis.py` tal como lo entregaron, sin corregir
+- [x] Incluye `casos_prueba.md`
+- [x] El Markdown muestra el **mapa conceptual** al inicio
+- [x] La tabla tiene los casos **ejecutados**, con columna **Estado** y las **líneas defectuosas** (L3–L5, L9, L12)
+- [x] El `README.md` responde los **dos desafíos** del cierre
+- [x] Cada actividad quedó registrada de principio a fin
+- [x] Las pruebas están automatizadas con **pytest** (`test_calculadora.py`)
+- [x] La **CI de GitHub Actions** las corre en cada push (`.github/workflows/ci.yml`)
