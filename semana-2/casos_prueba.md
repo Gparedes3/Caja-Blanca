@@ -138,11 +138,11 @@ Todo quedó versionado en el repositorio público:
 |---|---|
 | `presupuesto_analisis.py` | El código original, sin corregir |
 | `calculadora.py` | La versión corregida |
-| `casos_prueba.md` | Este documento |
+| `casos_prue5ba.md` | Este documento |
 | `README.md` | Resumen y respuestas del cierre |
 | `image.png` | El mapa conceptual |
 | `test_calculadora.py` | Las pruebas automáticas |
-| `.github/workflows/ci.yml` | La configuración de la CI |
+| `../.github/workflows/ci_pipeline.yml` | La configuración de la CI |
 
 ## Actividad 6 — Automatización de las pruebas
 
@@ -178,7 +178,7 @@ pip install pytest
 pytest
 ```
 
-Y con `.github/workflows/ci.yml`, GitHub Actions las corre solo en cada `push` y cada pull
+Y con `../.github/workflows/ci_pipeline.yml`, GitHub Actions las corre solo en cada `push` y cada pull
 request, con Python 3.11 y 3.12. Si alguien rompe algo, la CI se pone roja y avisa.
 
 **Resultado: 16 passed.**
