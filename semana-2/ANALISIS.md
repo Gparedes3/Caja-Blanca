@@ -4,7 +4,7 @@ Tres preguntas sobre lo que realmente significa este pipeline, más allá de que
 
 ## 1. ¿Por qué correr las pruebas en la nube (GitHub Actions) y no solo en local?
 
-Correrlas en local ya nos decía si las 16 pruebas pasaban en *nuestra* máquina — pero eso
+Correrlas en local ya nos decía si las 4 pruebas pasaban en *nuestra* máquina — pero eso
 solo prueba que funciona con la versión de Python, las librerías y el estado del disco que
 cada uno tiene en su laptop. Es el clásico "en mi máquina sí funciona".
 
@@ -25,12 +25,12 @@ certifica, para todo el equipo, que ese código es seguro de mezclar con el de l
 
 ## 2. ¿Qué significa realmente la luz verde?
 
-Significa exactamente esto y nada más: **los 16 casos que pensamos escribir pasaron, en
+Significa exactamente esto y nada más: **los 4 casos que pensamos escribir pasaron, en
 las dos versiones de Python que probamos, en el momento en que corrió el pipeline.**
 
 No significa que el software esté libre de errores. Esto es el Principio 1 de ISTQB en
 la práctica: las pruebas muestran la presencia de defectos, no su ausencia. Nuestro propio
-proyecto lo prueba — `calculadora.py` puede tener hoy un defecto que ninguno de los 16
+proyecto lo prueba — `calculadora.py` puede tener hoy un defecto que ninguno de los 4
 tests toca (por ejemplo, nunca probamos un presupuesto tan grande que provoque overflow,
 o meses no enteros). La luz verde es una foto acotada al conjunto de casos que se nos
 ocurrió escribir, no un certificado de perfección.

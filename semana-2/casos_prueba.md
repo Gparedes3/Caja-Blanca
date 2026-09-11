@@ -160,13 +160,13 @@ resultado. Así cada una se puede probar por separado:
 | `a_numero(texto)` | L3–L5 — da un mensaje claro si no es un número |
 | `analizar(...)` | La validación que faltaba: rechaza los negativos |
 
-`test_calculadora.py` tiene 16 pruebas sobre esas funciones. Cada una se lee igual de simple:
+`test_calculadora.py` tiene 4 pruebas sobre esas funciones. Cada una se lee igual de simple:
 
 ```python
-def test_intereses_con_datos_normales():
+def test_caso_feliz():
     assert calcular_intereses(100000, 6) == 12000
 
-def test_cuota_con_cero_socios():
+def test_division_por_cero():
     with pytest.raises(ValueError):
         calcular_cuota(50000, 0)
 ```
@@ -181,4 +181,4 @@ pytest
 Y con `../.github/workflows/ci_pipeline.yml`, GitHub Actions las corre solo en cada `push` y cada pull
 request, con Python 3.11 y 3.12. Si alguien rompe algo, la CI se pone roja y avisa.
 
-**Resultado: 16 passed.**
+**Resultado: 4 passed.**

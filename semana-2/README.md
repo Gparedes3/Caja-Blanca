@@ -57,11 +57,12 @@ pip install pytest
 pytest
 ```
 
-Son 16 pruebas en `test_calculadora.py`. Cada una llama a una función con unos datos y
+Son 4 pruebas en `test_calculadora.py`, una por cada tipo de caso: feliz, límite,
+división por cero e input negativo. Cada una llama a una función con unos datos y
 comprueba que devuelve lo que debe:
 
 ```python
-def test_intereses_con_datos_normales():
+def test_caso_feliz():
     assert calcular_intereses(100000, 6) == 12000
 ```
 
